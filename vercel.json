@@ -1,0 +1,12 @@
+{
+  "framework": "vite",
+  "installCommand": "cd frontend && npm install",
+  "buildCommand": "cd frontend && npm run build",
+  "outputDirectory": "frontend/dist",
+  "ignoreCommand": "git diff --quiet HEAD -- frontend",
+  "env": {
+    "VITE_API_URL": "@mentor-connect-api-url",
+    "VITE_SOCKET_URL": "@mentor-connect-socket-url"
+  }
+}
+
