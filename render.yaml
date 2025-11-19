@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: mentor_connect_backend
+    env: node
+    plan: starter
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CLIENT_URL
+        value: https://mentor-connect-frontend.onrender.com
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+
+  - type: static
+    name: mentor_connect_frontend
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://mentor-connect-backend.onrender.com/api
+      - key: VITE_SOCKET_URL
+        value: https://mentor-connect-backend.onrender.com
+

@@ -244,16 +244,42 @@ This project is open source and available under the MIT License.
 
 For issues and questions, please open an issue on the repository.
 
-## Deployment on Vercel
+## Deployment on Render
 
-1. Install the [Vercel CLI](https://vercel.com/docs/cli) and authenticate.
-2. Run `vercel link` at the repository root and set `frontend` as the project root when prompted.
-3. Configure the following Environment Variables in the Vercel dashboard (or via `vercel env`). The `vercel.json` file references them as secrets named `mentor-connect-api-url` and `mentor-connect-socket-url`, but you can rename them if you prefer.
-   - `VITE_API_URL` – points to your hosted Express API (`https://your-domain.com/api`)
-   - `VITE_SOCKET_URL` – points to the same host if Socket.IO runs alongside the API
-4. Optional: set `VITE_DEV_API_PROXY` for preview deployments if your backend preview URL differs.
-5. Deploy with `vercel --prod`. The build uses `vercel.json` to install and build only the frontend (`frontend/dist`).
+You can deploy both the Node.js backend and the Vite frontend to [Render](https://render.com) using a single **Blueprint** (`render.yaml`), or set them up manually.
 
-> **Note:** The backend requires a long-lived Node.js environment (e.g., Render, Railway, Fly.io). Once deployed, update the Vercel environment variables so the frontend points to the live API and WebSocket hosts.
+### 1. Deploy with `render.yaml`
+
+1. Install the [Render CLI](https://render.com/docs/blueprint-spec#deployment) and log in:  
+   `npm i -g @render/cli && render login`
+2. From the repo root run:  
+   `render blueprint launch`
+3. Update the placeholder environment variables in the Render dashboard after the services are provisioned:
+   - Backend (`mentor-connect-backend`)
+     - `MONGODB_URI`, `JWT_SECRET`, any other secrets
+     - `CLIENT_URL` → the frontend Render URL once known
+   - Frontend (`mentor-connect-frontend`)
+     - `VITE_API_URL` → `https://<backend-service>.onrender.com/api`
+     - `VITE_SOCKET_URL` → `https://<backend-service>.onrender.com`
+
+### 2. Manual deployment (UI)
+
+**Backend**
+1. Create a “Web Service” pointing to the repo, root directory `backend/`.
+2. Build command: `npm install`  
+   Start command: `npm start`
+3. Add environment variables: `MONGODB_URI`, `JWT_SECRET`, `CLIENT_URL` (set to the future frontend URL), etc.
+4. Deploy; Render assigns a URL such as `https://mentor-connect-backend.onrender.com`.
+
+**Frontend**
+1. Create a “Static Site” with root directory `frontend/`.
+2. Build command: `npm install && npm run build`  
+   Publish directory: `dist`
+3. Add Render environment variables:
+   - `VITE_API_URL` → backend URL + `/api`
+   - `VITE_SOCKET_URL` → backend base URL
+4. Redeploy whenever the backend URL changes so the environment variables propagate.
+
+Once both services are live, verify login, mentor browsing, bookings, and the meeting room to ensure the frontend talks to the hosted backend and sockets connect successfully.
 
 
